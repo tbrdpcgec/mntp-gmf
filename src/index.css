@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* tambahan styling opsional */
+body {
+  @apply bg-[#141414] font-sans;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+/* ============================= */
+/* Dark Scrollbar ala ChatGPT */
+/* ============================= */
+
+/* Firefox */
+.dark-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #3f3f46 #1a1a1a;
+}
+
+/* Chrome, Edge, Brave, Safari */
+.dark-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.dark-scroll::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.dark-scroll::-webkit-scrollbar-thumb {
+  background-color: #3f3f46;
+  border-radius: 8px;
+  border: 2px solid #1a1a1a;
+}
+
+.dark-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #52525b;
+}
+
+.rotate-header {
+  transform: rotate(-90deg);
+  white-space: nowrap;
+  font-size: 10px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.grid-cell {
+  @apply flex items-center justify-center h-full w-full;
+}
+
+/* SIDEBAR SCROLLBAR */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #1f1f1f;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}
+
