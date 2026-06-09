@@ -263,7 +263,7 @@ export default function Dashboard() {
       {activeDashboard === 'TCR' && <DashboardTcr />}
       {activeDashboard === 'TCS' && <DashboardTcs />}
       {activeDashboard === 'TCW' && <DashboardTcw />}
-      {activeDashboard === 'C-Rating' && <PowerBIDashboard />}
+      {activeDashboard === 'POWERBI' && <PowerBIDashboard />}
     </div>
   );
 }
