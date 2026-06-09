@@ -1153,133 +1153,246 @@ export default function BUSH4() {
     return ra - rb;
   });
 
-  /////////chart
-  const ProcessChart = ({ title, chart }: any) => {
-    if (!chart) return null;
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (!active || !payload?.length) return null;
 
-    const total = chart.total || 1;
+    const row = payload[0].payload;
 
-    const data = [
+    return (
+      <div className="bg-white border rounded-lg shadow-lg p-3 text-xs min-w-[120px]">
+        <div className="font-bold text-gray-700 border-b pb-1 mb-2">
+          {label}
+        </div>
+
+        <div className="flex justify-between items-center text-red-500 font-semibold">
+          <span>OPEN</span>
+          <span>{row.openCount}</span>
+        </div>
+
+        <div className="flex justify-between items-center text-yellow-500 font-semibold">
+          <span>PROGRESS</span>
+          <span>{row.progressCount}</span>
+        </div>
+
+        <div className="flex justify-between items-center text-green-600 font-semibold">
+          <span>CLOSED</span>
+          <span>{row.closedCount}</span>
+        </div>
+
+        <div className="border-t mt-2 pt-2 flex justify-between font-bold text-gray-700">
+          <span>TOTAL</span>
+          <span>{row.total}</span>
+        </div>
+      </div>
+    );
+  };
+
+  /////////INI chart
+  const ShopStatusChart = () => {
+    const shopChartData = [
       {
-        name: title,
-        open: ((chart.open || 0) / total) * 100,
-        progress: ((chart.progress || 0) / total) * 100,
-        closed: ((chart.closed || 0) / total) * 100,
+        name: 'SHEETMETAL',
+        total: chartSheetmetal.total,
+
+        open:
+          chartSheetmetal.total > 0
+            ? (chartSheetmetal.open / chartSheetmetal.total) * 100
+            : 0,
+        progress:
+          chartSheetmetal.total > 0
+            ? (chartSheetmetal.progress / chartSheetmetal.total) * 100
+            : 0,
+        closed:
+          chartSheetmetal.total > 0
+            ? (chartSheetmetal.closed / chartSheetmetal.total) * 100
+            : 0,
+
+        openCount: chartSheetmetal.open,
+        progressCount: chartSheetmetal.progress,
+        closedCount: chartSheetmetal.closed,
+      },
+
+      {
+        name: 'COMPOSITE',
+        total: chartComposite.total,
+
+        open:
+          chartComposite.total > 0
+            ? (chartComposite.open / chartComposite.total) * 100
+            : 0,
+        progress:
+          chartComposite.total > 0
+            ? (chartComposite.progress / chartComposite.total) * 100
+            : 0,
+        closed:
+          chartComposite.total > 0
+            ? (chartComposite.closed / chartComposite.total) * 100
+            : 0,
+
+        openCount: chartComposite.open,
+        progressCount: chartComposite.progress,
+        closedCount: chartComposite.closed,
+      },
+
+      {
+        name: 'SEAT',
+        total: chartSeat.total,
+
+        open:
+          chartSeat.total > 0 ? (chartSeat.open / chartSeat.total) * 100 : 0,
+        progress:
+          chartSeat.total > 0
+            ? (chartSeat.progress / chartSeat.total) * 100
+            : 0,
+        closed:
+          chartSeat.total > 0 ? (chartSeat.closed / chartSeat.total) * 100 : 0,
+
+        openCount: chartSeat.open,
+        progressCount: chartSeat.progress,
+        closedCount: chartSeat.closed,
+      },
+
+      {
+        name: 'CABIN',
+        total: chartCabin.total,
+
+        open:
+          chartCabin.total > 0 ? (chartCabin.open / chartCabin.total) * 100 : 0,
+        progress:
+          chartCabin.total > 0
+            ? (chartCabin.progress / chartCabin.total) * 100
+            : 0,
+        closed:
+          chartCabin.total > 0
+            ? (chartCabin.closed / chartCabin.total) * 100
+            : 0,
+
+        openCount: chartCabin.open,
+        progressCount: chartCabin.progress,
+        closedCount: chartCabin.closed,
+      },
+
+      {
+        name: 'MACHINING',
+        total: chartMachining.total,
+
+        open:
+          chartMachining.total > 0
+            ? (chartMachining.open / chartMachining.total) * 100
+            : 0,
+        progress:
+          chartMachining.total > 0
+            ? (chartMachining.progress / chartMachining.total) * 100
+            : 0,
+        closed:
+          chartMachining.total > 0
+            ? (chartMachining.closed / chartMachining.total) * 100
+            : 0,
+
+        openCount: chartMachining.open,
+        progressCount: chartMachining.progress,
+        closedCount: chartMachining.closed,
       },
     ];
 
     return (
-      <div className="border rounded-[10px] shadow bg-white p-1 w-full">
-        {/* TITLE */}
-        <h3 className="text-[11px] font-bold text-center text-gray-700 mb-0">
-          {title}
-        </h3>
+      <div className="border rounded-[10px] shadow bg-white w-full h-[210px] flex flex-col">
+        <div className="text-center text-sm font-bold text-gray-700 ">
+          SHOP STATUS OVERVIEW
+        </div>
 
-        {/* STACKED BAR */}
-        <div className="w-full h-[30px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              layout="vertical"
-              data={data}
-              margin={{
-                top: 2,
-                right: 4,
-                left: 4,
-                bottom: 2,
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={shopChartData}
+            barCategoryGap="18%"
+            barGap={0}
+            margin={{
+              top: 5,
+              right: 2,
+              left: -20,
+              bottom: -4,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+
+            <XAxis
+              dataKey="name"
+              interval={0}
+              tick={{
+                fontSize: 10,
+                fontWeight: 600,
               }}
-            >
-              <XAxis type="number" domain={[0, 100]} hide />
+            />
 
-              <YAxis type="category" dataKey="name" hide />
+            <YAxis
+              domain={[0, 100]}
+              tickFormatter={(v) => `${v}%`}
+              tick={{
+                fontSize: 11,
+              }}
+            />
 
-              <Tooltip
-                formatter={(value: any) => `${Number(value).toFixed(0)}%`}
-                contentStyle={{
-                  padding: '2px 6px',
-                  fontSize: '11px',
-                  borderRadius: '6px',
+            <Tooltip content={<CustomTooltip />} />
+
+            {/* OPEN */}
+            <Bar dataKey="open" stackId="a" fill="#ef4444">
+              <LabelList
+                dataKey="open"
+                position="center"
+                formatter={(v: number) => (v >= 8 ? `${Math.round(v)}%` : '')}
+                style={{
+                  fill: '#fff',
+                  fontSize: 10,
+                  fontWeight: 600,
                 }}
               />
+            </Bar>
 
-              {/* OPEN */}
-              {/* OPEN */}
-              <Bar
-                dataKey="open"
-                stackId="a"
-                fill="#ef4444"
-                radius={[0, 0, 0, 0]}
-              >
-                <LabelList
-                  dataKey="open"
-                  position="center"
-                  formatter={(value: number) => `${Math.round(value)}%`}
-                  style={{
-                    fill: 'white',
-                    fontSize: '11px',
-                    fontWeight: '',
-                  }}
-                />
-              </Bar>
+            {/* PROGRESS */}
+            <Bar dataKey="progress" stackId="a" fill="#eab308">
+              <LabelList
+                dataKey="progress"
+                position="center"
+                formatter={(v: number) => (v >= 8 ? `${Math.round(v)}%` : '')}
+                style={{
+                  fill: '#fff',
+                  fontSize: 10,
+                  fontWeight: 600,
+                }}
+              />
+            </Bar>
 
-              {/* PROGRESS */}
-              {/* PROGRESS */}
-              <Bar dataKey="progress" stackId="a" fill="#eab308">
-                <LabelList
-                  dataKey="progress"
-                  position="center"
-                  formatter={(value: number) => `${Math.round(value)}%`}
-                  style={{
-                    fill: 'white',
-                    fontSize: '11px',
-                    fontWeight: '',
-                  }}
-                />
-              </Bar>
-
-              {/* CLOSED */}
-              {/* CLOSED */}
-              <Bar
+            {/* CLOSED */}
+            <Bar dataKey="closed" stackId="a" fill="#22c55e">
+              <LabelList
                 dataKey="closed"
-                stackId="a"
-                fill="#22c55e"
-                radius={[0, 0, 0, 0]}
-              >
-                <LabelList
-                  dataKey="closed"
-                  position="center"
-                  formatter={(value: number) => `${Math.round(value)}%`}
-                  style={{
-                    fill: 'white',
-                    fontSize: '11px',
-                    fontWeight: '',
-                  }}
-                />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+                position="center"
+                formatter={(v: number) => (v >= 8 ? `${Math.round(v)}%` : '')}
+                style={{
+                  fill: '#fff',
+                  fontSize: 10,
+                  fontWeight: 600,
+                }}
+              />
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
 
-        {/* LEGEND */}
-        <div className="flex justify-center gap-2 text-[11px] mt-0 flex-wrap">
+        <div className="flex justify-center gap-4 mb-1  text-[10px] flex-wrap">
           <div className="flex items-center gap-1">
-            <div className="w-2 h-2 bg-red-500 " />
-            <span>{chart.open || 0}</span>
+            <div className="w-3 h-3 bg-red-500 rounded-sm" />
+            OPEN
           </div>
 
           <div className="flex items-center gap-1">
-            <div className="w-2 h-2 bg-yellow-500 " />
-            <span>{chart.progress || 0}</span>
+            <div className="w-3 h-3 bg-yellow-500 rounded-sm" />
+            PROGRESS
           </div>
 
           <div className="flex items-center gap-1">
-            <div className="w-2 h-2 bg-green-500 " />
-            <span>{chart.closed || 0}</span>
+            <div className="w-3 h-3 bg-green-500 rounded-sm" />
+            CLOSED
           </div>
-        </div>
-
-        {/* FOOTER */}
-        <div className="flex justify-between mt-0 px-1 text-[11px] font-bold text-gray-700">
-          <span>TOTAL : {chart.total || 0}</span>
         </div>
       </div>
     );
@@ -1944,47 +2057,36 @@ export default function BUSH4() {
             {/* ================= LEFT: CHART ================= */}
             <div className="flex-1 max-w-[380px] flex flex-col gap-2">
               <div className="w-full flex flex-col gap-2">
-                {/* 🔥 CHART SECTION */}
-                <div className="grid grid-cols-1 gap-2">
-                  <ProcessChart title="SHEET METAL" chart={chartSheetmetal} />
-                  <ProcessChart title="COMPOSITE" chart={chartComposite} />
-                  <ProcessChart title="SEAT" chart={chartSeat} />
-                  <ProcessChart title="CABIN" chart={chartCabin} />
-                  <ProcessChart title="MACHINING" chart={chartMachining} />
-                </div>
-              </div>
-            </div>
+                {/* ===== TOP RIGHT: BOX SUMMARY ===== */}
+                <div className="grid grid-cols-2 gap-2">
+                  {/* KOTAK GARUDA */}
+                  <div
+                    onClick={() => {
+                      const next =
+                        customerFilter === 'GARUDA' ? 'ALL' : 'GARUDA';
 
-            {/* ================= RIGHT SIDE ================= */}
-            <div className="flex-1 flex flex-col gap-2 min-w-0">
-              {/* ===== TOP RIGHT: BOX SUMMARY ===== */}
-              <div className="flex gap-2">
-                {/* KOTAK GARUDA */}
-                <div
-                  onClick={() => {
-                    const next = customerFilter === 'GARUDA' ? 'ALL' : 'GARUDA';
+                      setCustomerFilter(next);
 
-                    setCustomerFilter(next);
+                      if (next === 'ALL') {
+                        setSelectedSummaryAcRegs([]);
+                      } else {
+                        const acRegs = projectSummary
+                          .filter((r) => {
+                            const remain = getRemainDays(r.rts);
 
-                    if (next === 'ALL') {
-                      setSelectedSummaryAcRegs([]);
-                    } else {
-                      const acRegs = projectSummary
-                        .filter((r) => {
-                          const remain = getRemainDays(r.rts);
+                            return (
+                              r.customer?.toUpperCase() ===
+                                'GARUDA INDONESIA' &&
+                              remain !== null &&
+                              remain >= 0
+                            );
+                          })
+                          .map((r) => r.acReg);
 
-                          return (
-                            r.customer?.toUpperCase() === 'GARUDA INDONESIA' &&
-                            remain !== null &&
-                            remain >= 0
-                          );
-                        })
-                        .map((r) => r.acReg);
-
-                      setSelectedSummaryAcRegs(acRegs);
-                    }
-                  }}
-                  className={` flex-1 min-w-[100px]
+                        setSelectedSummaryAcRegs(acRegs);
+                      }
+                    }}
+                    className={` flex-1 min-w-[100px]
 cursor-pointer p-3 rounded-lg shadow text-center font-bold transition-all
 hover:scale-105 hover:shadow-lg 
 ${
@@ -1993,39 +2095,39 @@ ${
     : 'bg-blue-600 text-white'
 }
 `}
-                >
-                  <div className="text-xs">GARUDA</div>
-                  <div className="text-2xl font-bold">
-                    {customerSummary.garuda}
+                  >
+                    <div className="text-xs">GARUDA</div>
+                    <div className="text-2xl font-bold">
+                      {customerSummary.garuda}
+                    </div>
                   </div>
-                </div>
-                {/* KOTAK CITILINK */}
-                <div
-                  onClick={() => {
-                    const next =
-                      customerFilter === 'CITILINK' ? 'ALL' : 'CITILINK';
+                  {/* KOTAK CITILINK */}
+                  <div
+                    onClick={() => {
+                      const next =
+                        customerFilter === 'CITILINK' ? 'ALL' : 'CITILINK';
 
-                    setCustomerFilter(next);
+                      setCustomerFilter(next);
 
-                    if (next === 'ALL') {
-                      setSelectedSummaryAcRegs([]);
-                    } else {
-                      const acRegs = projectSummary
-                        .filter((r) => {
-                          const remain = getRemainDays(r.rts);
+                      if (next === 'ALL') {
+                        setSelectedSummaryAcRegs([]);
+                      } else {
+                        const acRegs = projectSummary
+                          .filter((r) => {
+                            const remain = getRemainDays(r.rts);
 
-                          return (
-                            r.customer?.toUpperCase() === 'CITILINK' &&
-                            remain !== null &&
-                            remain >= 0
-                          );
-                        })
-                        .map((r) => r.acReg);
+                            return (
+                              r.customer?.toUpperCase() === 'CITILINK' &&
+                              remain !== null &&
+                              remain >= 0
+                            );
+                          })
+                          .map((r) => r.acReg);
 
-                      setSelectedSummaryAcRegs(acRegs);
-                    }
-                  }}
-                  className={` flex-1 min-w-[100px]
+                        setSelectedSummaryAcRegs(acRegs);
+                      }
+                    }}
+                    className={` flex-1 min-w-[100px]
 cursor-pointer p-3 rounded-lg shadow text-center transition-all font-bold
 hover:scale-105 hover:shadow-lg
 ${
@@ -2034,41 +2136,41 @@ ${
     : 'bg-green-600 text-white'
 }
 `}
-                >
-                  <div className="text-xs">CITILINK</div>
-                  <div className="text-2xl font-bold">
-                    {customerSummary.citilink}
+                  >
+                    <div className="text-xs">CITILINK</div>
+                    <div className="text-2xl font-bold">
+                      {customerSummary.citilink}
+                    </div>
                   </div>
-                </div>
-                {/* KOTAK NON */}
-                <div
-                  onClick={() => {
-                    const next = customerFilter === 'NON' ? 'ALL' : 'NON';
+                  {/* KOTAK NON */}
+                  <div
+                    onClick={() => {
+                      const next = customerFilter === 'NON' ? 'ALL' : 'NON';
 
-                    setCustomerFilter(next);
+                      setCustomerFilter(next);
 
-                    if (next === 'ALL') {
-                      setSelectedSummaryAcRegs([]);
-                    } else {
-                      const acRegs = projectSummary
-                        .filter((r) => {
-                          const c = r.customer?.toUpperCase();
-                          const remain = getRemainDays(r.rts);
+                      if (next === 'ALL') {
+                        setSelectedSummaryAcRegs([]);
+                      } else {
+                        const acRegs = projectSummary
+                          .filter((r) => {
+                            const c = r.customer?.toUpperCase();
+                            const remain = getRemainDays(r.rts);
 
-                          return (
-                            c !== 'GARUDA INDONESIA' &&
-                            c !== 'CITILINK' &&
-                            c !== 'NON PROJECT' &&
-                            remain !== null &&
-                            remain >= 0
-                          );
-                        })
-                        .map((r) => r.acReg);
+                            return (
+                              c !== 'GARUDA INDONESIA' &&
+                              c !== 'CITILINK' &&
+                              c !== 'NON PROJECT' &&
+                              remain !== null &&
+                              remain >= 0
+                            );
+                          })
+                          .map((r) => r.acReg);
 
-                      setSelectedSummaryAcRegs(acRegs);
-                    }
-                  }}
-                  className={`flex-1 min-w-[100px]
+                        setSelectedSummaryAcRegs(acRegs);
+                      }
+                    }}
+                    className={`flex-1 min-w-[100px]
 cursor-pointer p-3 rounded-lg shadow text-center transition-all font-bold
 hover:scale-105 hover:shadow-lg
 ${
@@ -2077,56 +2179,36 @@ ${
     : 'bg-yellow-400 text-black'
 }
 `}
-                >
-                  <div className="text-xs">NON GA/CTV</div>
-                  <div className="text-2xl font-bold">
-                    {customerSummary.nonGaCtv}
+                  >
+                    <div className="text-xs">NON GA/CTV</div>
+                    <div className="text-2xl font-bold">
+                      {customerSummary.nonGaCtv}
+                    </div>
                   </div>
-                </div>
 
-                {/* KOTAK TOTAL */}
-                <div
-                  onClick={() => {
-                    setCustomerFilter('ALL');
-                    setSelectedSummaryAcRegs([]);
-                  }}
-                  className={`flex-1 min-w-[100px]
-cursor-pointer p-3 rounded-lg shadow text-center transition-all font-bold
-hover:scale-105 hover:shadow-lg
-${
-  customerFilter === 'ALL'
-    ? 'bg-purple-800  ring-purple-300 text-white'
-    : 'bg-purple-600 text-white'
-}
-`}
-                >
-                  <div className="text-xs">TOTAL CUSTOMER</div>
-                  <div className="text-2xl font-bold">
-                    {customerSummary.total}
-                  </div>
-                </div>
+                  {/* rts7 */}
+                  <div
+                    onClick={() => {
+                      const next = customerFilter === 'RTS7' ? 'ALL' : 'RTS7';
 
-                {/* rts7 */}
-                <div
-                  onClick={() => {
-                    const next = customerFilter === 'RTS7' ? 'ALL' : 'RTS7';
+                      setCustomerFilter(next);
 
-                    setCustomerFilter(next);
+                      if (next === 'ALL') {
+                        setSelectedSummaryAcRegs([]);
+                      } else {
+                        const acRegs = projectSummary
+                          .filter((r) => {
+                            const remain = getRemainDays(r.rts);
+                            return (
+                              remain !== null && remain >= 0 && remain <= 7
+                            );
+                          })
+                          .map((r) => r.acReg);
 
-                    if (next === 'ALL') {
-                      setSelectedSummaryAcRegs([]);
-                    } else {
-                      const acRegs = projectSummary
-                        .filter((r) => {
-                          const remain = getRemainDays(r.rts);
-                          return remain !== null && remain >= 0 && remain <= 7;
-                        })
-                        .map((r) => r.acReg);
-
-                      setSelectedSummaryAcRegs(acRegs);
-                    }
-                  }}
-                  className={`flex-1 min-w-[100px]
+                        setSelectedSummaryAcRegs(acRegs);
+                      }
+                    }}
+                    className={`flex-1 min-w-[100px]
     cursor-pointer p-3 rounded-lg shadow text-center transition-all font-bold
     hover:scale-105 hover:shadow-lg
     ${
@@ -2135,14 +2217,23 @@ ${
         : 'bg-red-500 text-white'
     }
   `}
-                >
-                  <div className="text-xs font-semibold">RTS D-7</div>
-                  <div className="text-2xl font-bold">
-                    {customerSummary.rts7}
+                  >
+                    <div className="text-xs font-semibold">RTS D-7</div>
+                    <div className="text-2xl font-bold">
+                      {customerSummary.rts7}
+                    </div>
                   </div>
                 </div>
-              </div>
 
+                {/* 🔥 CHART SECTION */}
+                <div className="w-full">
+                  <ShopStatusChart />
+                </div>
+              </div>
+            </div>
+
+            {/* ================= RIGHT SIDE ================= */}
+            <div className="flex-1 flex flex-col gap-2 min-w-0">
               {/* ===== RIGHT BOTTOM: TABLE SUMMARY ===== */}
               <div className="flex-1">
                 <div
