@@ -13,7 +13,7 @@ function DownloadPDFButton({ pdfData, shift, filterReportOnly }) {
   const handleConfirm = async () => {
     setShowConfirm(false);
 
-    const doc = <W303PDF data={pdfData} />;
+    const doc = <W304PDF data={pdfData} />;
 
     const blob = await pdf(doc).toBlob();
     const url = URL.createObjectURL(blob);
