@@ -4,7 +4,7 @@ import * as XLSX from 'xlsx';
 import CustomSelect from '../components/CustomSelect';
 import InputDataTJKshop from './InputDataTJKshop';
 
-const LOCATIONS = ['ON A/C', 'WS1', 'CGK'];
+const LOCATIONS = ['ON A/C', 'BUSH4'];
 const DOC_TYPES = ['JC', 'MDR', 'SOA'];
 const PLNTWKCNTR = ['CGK', 'GAH1', 'GAH2', 'GAH3', 'GAH4', 'WSSR', 'WSST'];
 
