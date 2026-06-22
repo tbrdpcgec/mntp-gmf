@@ -1124,9 +1124,9 @@ export default function W305() {
                 onClick={() => {
                   const filtered = rows.filter(
                     (r) =>
-                      r.report_cs1 === true ||
-                      r.report_cs1 === '1' ||
-                      r.report_cs1 === 'checked'
+                      r.report_cs4 === true ||
+                      r.report_cs4 === '1' ||
+                      r.report_cs4 === 'checked'
                   );
 
                   if (filtered.length === 0) {
@@ -1137,15 +1137,15 @@ export default function W305() {
                   const totalOrder = filtered.length;
 
                   const totalOpen = filtered.filter(
-                    (r) => r.status_cs1 === 'OPEN'
+                    (r) => r.status_cs4 === 'OPEN'
                   ).length;
 
                   const totalProgress = filtered.filter(
-                    (r) => r.status_cs1 === 'PROGRESS'
+                    (r) => r.status_cs4 === 'PROGRESS'
                   ).length;
 
                   const totalClosed = filtered.filter(
-                    (r) => r.status_cs1 === 'CLOSED'
+                    (r) => r.status_cs4 === 'CLOSED'
                   ).length;
 
                   const message = generateWhatsAppMessage({
@@ -1158,8 +1158,8 @@ export default function W305() {
                       ac_reg: r.ac_reg || '',
                       order: r.order || '',
                       description: r.description || '',
-                      status: r.status_cs1 || '',
-                      remark: r.remark_cs1 || '',
+                      status: r.status_cs4 || '',
+                      remark: r.remark_cs4 || '',
                     })),
                     supervisor: supervisorOut,
                     crew: crewOut,
