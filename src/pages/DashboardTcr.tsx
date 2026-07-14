@@ -587,7 +587,7 @@ export default function BUSH4() {
         filterOrders.some((o) => o.value === String(row.order));
 
       // ❌ filter PN yang TIDAK boleh tampil
-      const blockedPnPrefixes = ['141A4810-', 'D53132010000'];
+      const blockedPnPrefixes = ['141A4810-', 'D53132010000', 'TAAI3-03CE20-01', 'TAAI3-03PE20-01','TAAI3-03PE20-01','TAAI3-03CE21-01'];
 
       const matchesPn = !blockedPnPrefixes.some((pn) =>
         (row.pn || '').includes(pn)
@@ -848,6 +848,46 @@ export default function BUSH4() {
       shop: 'COMPOSITE',
       safetyStock: 1,
       nextFsb: '-',
+    },
+    {
+      label: 'TAAI3-03CE20-01',
+      match: 'TAAI3-03CE20-01',
+      typeAc: 'A320',
+      category: 'CREW SEAT',
+      description: 'SEAT, FIRST OFFICER',
+      shop: 'SEAT',
+      safetyStock: 1,
+      nextFsb: '-', // optional, bisa '-'
+    },
+    {
+      label: 'TAAI3-03PE20-01',
+      match: 'TAAI3-03PE20-01',
+      typeAc: 'A320',
+      category: 'CREW SEAT',
+      description: 'SEAT, PILOT',
+      shop: 'SEAT',
+      safetyStock: 1,
+      nextFsb: '-', // optional, bisa '-'
+    },
+    {
+      label: 'TAAI3-03PE20-01',
+      match: 'TAAI3-03PE20-01',
+      typeAc: 'A320',
+      category: 'CREW SEAT',
+      description: 'SEAT, PILOT',
+      shop: 'SEAT',
+      safetyStock: 1,
+      nextFsb: '-', // optional, bisa '-'
+    },
+    {
+      label: 'TAAI3-03CE21-01',
+      match: 'TAAI3-03CE21-01',
+      typeAc: 'A320',
+      category: 'CREW SEAT',
+      description: 'SEAT, FIRST OFFICER',
+      shop: 'SEAT',
+      safetyStock: 1,
+      nextFsb: '-', // optional, bisa '-'
     },
   ];
 
