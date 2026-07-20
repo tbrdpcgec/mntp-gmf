@@ -3,6 +3,7 @@ import { supabase } from '../supabaseClient';
 import * as XLSX from 'xlsx';
 import CustomSelect from '../components/CustomSelect';
 import InputData from './InputData';
+import Swal from 'sweetalert2';
 
 const LOCATIONS = ['AWAITING', 'INCOMING', 'WIP', 'FSB', 'RELEASE'];
 const DOC_TYPES = ['DN', 'JC', 'MDR', 'PDS'];
@@ -47,7 +48,7 @@ const columnWidths: Record<string, string> = {
   ac_reg: 'min-w-[70px]',
   description: 'min-w-[350px]',
   order: 'min-w-[70px]',
-  location: 'min-w-[00px]',
+  location: 'min-w-[100px]',
   doc_type: 'min-w-[50px]',
   plntwkcntr: 'min-w-[0px]',
   date_in: 'min-w-[80px]',
@@ -85,7 +86,6 @@ const COLUMN_ORDER: { key: string; label: string }[] = [
   { key: 'description', label: 'Description' },
   { key: 'pn', label: 'P/N' },
   { key: 'sn', label: 'S/N' },
-  { key: 'pds_no', label: 'PDS No.' },
   { key: 'date_in', label: 'Date In' },
   { key: 'location', label: 'Status Comp' },
   { key: 'doc_status', label: 'Doc Status' },
@@ -107,9 +107,7 @@ const COLUMN_ORDER: { key: string; label: string }[] = [
 
   { key: 'remark_pro', label: 'Remark from Shop' },
   { key: 'est_date', label: 'Est Finish' },
-  { key: 'remark_bdp', label: 'Remark BDP' },
   { key: 'tracking_sp', label: 'Tracking SP' },
-  { key: 'link_scan', label: 'Link Scanned' },
 ];
 
 const STATUS_COLORS: Record<string, string> = {
@@ -341,6 +339,8 @@ export default function BUSH4() {
   const [selectedRowId, setSelectedRowId] = useState<string | number | null>(
     null
   );
+  const [openGenerate, setOpenGenerate] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState('');
 
   /////////untuk shop
 
@@ -1008,6 +1008,64 @@ export default function BUSH4() {
     currentPage * rowsPerPage
   );
 
+  const filteredOrders = rows
+    .filter((row: any) => String(row.order).includes(selectedOrder))
+    .slice(0, 10);
+
+  const handleGenerate = async () => {
+    if (!selectedOrder) {
+      alert('Please select Order.');
+
+      return;
+    }
+
+    const { data, error } = await supabase.rpc('generate_pds_number', {
+      p_order: parseInt(selectedOrder),
+    });
+
+    if (error) {
+      alert(error.message);
+
+      return;
+    }
+
+    console.log(JSON.stringify(data, null, 2));
+
+    await Swal.fire({
+      icon: data.created ? 'success' : 'info',
+
+      title: data.created ? 'PDS Created Successfully' : 'PDS Has Been Created',
+
+      html: `
+        <table style="width:100%;text-align:left">
+          <tr>
+            <td><b>Order</b></td>
+            <td>${selectedOrder}</td>
+          </tr>
+    
+          <tr>
+            <td><b>PDS Number</b></td>
+            <td>
+              <span
+                style="font-size:20px;color:#0ea5e9;font-weight:bold"
+              >
+                ${data.pds_no}
+              </span>
+            </td>
+          </tr>
+        </table>
+      `,
+
+      confirmButtonColor: '#00838f',
+    });
+
+    setOpenGenerate(false);
+
+    setSelectedOrder('');
+
+    fetchData();
+  };
+
   return (
     <div className="bg-[#141414] w-full h-full">
       <div className="bg-[#292929] px-3 pt-3 pb-6 max-h-[100vh] overflow-hidden w-full rounded-lg">
@@ -1132,6 +1190,13 @@ export default function BUSH4() {
             className="border border-gray-500 rounded-md bg-green-600 hover:bg-green-700 text-white px-2 py-1 shadow text-[11px]"
           >
             Input Data
+          </button>
+
+          <button
+            onClick={() => setOpenGenerate(true)}
+            className="border border-gray-500 rounded-md bg-yellow-600 hover:bg-yellow-700 text-white px-2 py-1 shadow text-[11px]"
+          >
+            Create PDS No
           </button>
 
           <input
@@ -1586,7 +1651,29 @@ export default function BUSH4() {
                                 value: loc,
                               })),
                             ]}
-                            className={`border border-transparent rounded-md px-0.5 py-0.5 text-[11px] font-normal bg-transparent`}
+                            className={`
+                            w-full
+                            px-1
+                            py-0.5
+                            text-[11px]
+                            text-white
+                            border-none
+                            rounded
+                            focus:outline-none
+                            ${
+                              row.location === 'AWAITING'
+                                ? 'bg-gray-500'
+                                : row.location === 'INCOMING'
+                                ? 'bg-blue-500'
+                                : row.location === 'WIP'
+                                ? 'bg-orange-500'
+                                : row.location === 'FSB'
+                                ? 'bg-purple-500'
+                                : row.location === 'RELEASE'
+                                ? 'bg-green-600'
+                                : 'bg-[#292929]'
+                            }
+                          `}
                           />
                         ) : key === 'priority' ? (
                           <CustomSelect
@@ -1911,6 +1998,74 @@ export default function BUSH4() {
                   ))}
             </tbody>
           </table>
+
+          {openGenerate && (
+            <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg shadow-lg w-[420px]">
+                <div className="border-b px-4 py-3">
+                  <h2 className="font-semibold text-lg">Generate PDS Number</h2>
+                </div>
+
+                <div className="p-4">
+                  <label className="block text-sm font-medium mb-2">
+                    Order Number
+                  </label>
+
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={selectedOrder}
+                      onChange={(e) => {
+                        setSelectedOrder(e.target.value);
+                        setShowOrderSuggestions(true);
+                      }}
+                      onFocus={() => setShowOrderSuggestions(true)}
+                      placeholder="Type Order Number..."
+                      className="w-full border rounded px-3 py-2"
+                    />
+
+                    {showOrderSuggestions &&
+                      selectedOrder &&
+                      filteredOrders.length > 0 && (
+                        <div className="absolute left-0 right-0 mt-1 bg-white border rounded shadow-lg max-h-48 overflow-y-auto z-50">
+                          {filteredOrders.map((row: any) => (
+                            <div
+                              key={row.order}
+                              onClick={() => {
+                                setSelectedOrder(row.order);
+                                setShowOrderSuggestions(false);
+                              }}
+                              className="px-3 py-2 hover:bg-cyan-100 cursor-pointer text-sm"
+                            >
+                              {row.order}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2 p-4 border-t">
+                  <button
+                    onClick={() => {
+                      setOpenGenerate(false);
+                      setSelectedOrder('');
+                    }}
+                    className="border rounded px-3 py-1"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    onClick={handleGenerate}
+                    className="bg-green-600 hover:bg-green-700 text-white rounded px-3 py-1"
+                  >
+                    Create
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {notification && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">

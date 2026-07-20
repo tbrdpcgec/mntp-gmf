@@ -66,6 +66,7 @@ const dailyMenuSubmenu = [
   { label: 'TCR Structure & Cabin', path: '/daily-menu/ws1' },
   { label: 'TCS Special Process', path: '/daily-menu/tcs' },
   { label: 'TCW Landing Gear', path: '/daily-menu/tcW' },
+  { label: 'PD Sheet History', path: '/pds' },
 ];
 
 const dailyMenuTBKSubmenu = [

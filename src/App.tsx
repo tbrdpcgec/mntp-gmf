@@ -27,6 +27,8 @@ import DailyMenu from './pages/DailyMenu';
 import DailyMenuTcs from './pages/DailyMenuTcs';
 import DailyMenuWS1 from './pages/DailyMenuWS1';
 import DailyMenuTcw from './pages/DailyMenuTcw';
+
+import Pds from './pages/Pds';
 import DailyMenuTBKshop from './pages/DailyMenuTBKshop';
 import DailyMenuTBKhangar from './pages/DailyMenuTBKhangar';
 
@@ -89,6 +91,7 @@ export default function App() {
               <Route path="/daily-menu/tcw" element={<DailyMenuTcw />} />
               <Route path="/daily-menu/tcs" element={<DailyMenuTcs />} />
               <Route path="/daily-menu/ws1" element={<DailyMenuWS1 />} />
+              <Route path="/pds" element={<Pds />} />
               <Route
                 path="/daily-menu/tbk/shop"
                 element={<DailyMenuTBKshop />}
