@@ -257,9 +257,10 @@ export default function Abmp() {
 
       // ===== 2️⃣ Update tableData ke Supabase =====
       // Ambil semua row dari state
-      const payload = tableData.map(({ id, ac_reg, customer, rts }) => ({
+      const payload = tableData.map(({ id, ac_reg, line, customer, rts }) => ({
         id,
         ac_reg,
+        line,
         customer,
         rts,
       }));
@@ -270,6 +271,7 @@ export default function Abmp() {
           .from('abmp')
           .update({
             ac_reg: row.ac_reg,
+            line: row.line,
             customer: row.customer,
             rts: row.rts,
           })
@@ -313,7 +315,7 @@ export default function Abmp() {
     setLoadingTable(true);
     const { data, error } = await supabase
       .from('abmp')
-      .select('id, ac_reg, customer, rts')
+      .select('id, ac_reg, customer, rts, line')
       .order('ac_reg', { ascending: true });
 
     if (!error && data) {
