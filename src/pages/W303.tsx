@@ -470,18 +470,29 @@ export default function W303() {
 
     const summary =
       `\n\n*TOTAL : ${totalOrder} ORDER*` +
-      `\n${totalOpen} OPEN | ${totalProgress} PROGRESS | ${totalClosed} CLOSED`;
+      `\n${totalOpen} OPEN • ${totalProgress} PROGRESS • ${totalClosed} CLOSED`;
 
-    const detail = orders
-      .map(
-        (o, i) =>
-          `\n\n${i + 1}. ${o.ac_reg}` +
-          `\n${o.order}` +
-          `\n${o.description}` +
-          `\n${o.status}` +
-          `\n${o.remark || ''}` +
-          `\n${o.priority || ''}`
-      )
+      const detail = orders
+      .map((o, i) => {
+        const statusIcon =
+          o.status === 'OPEN'
+            ? '🔴'
+            : o.status === 'PROGRESS'
+            ? '🟡'
+            : o.status === 'CLOSED'
+            ? '🟢'
+            : '⚪';
+    
+        return `
+    
+    ${i + 1}. ${o.ac_reg} • ${o.order}
+    ${o.description}
+    ${statusIcon} ${o.status}${
+          o.remark ? `\n> ${o.remark}` : ''
+        }${
+          o.priority ? `\n ${o.priority}` : ''
+        }`;
+      })
       .join('');
 
     const closing = `\n\n*BEST REGARDS*` + `\n${supervisor}` + `\n${crew}`;

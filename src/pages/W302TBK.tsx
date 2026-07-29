@@ -444,16 +444,28 @@ export default function W301() {
     });
 
     const header = `*DAILY WORKLOAD REPORT*\n*COMPOSITE WORKSHOP-1*\nTBK-6 | ${shiftType}\n${today}`;
-    const summary = `\n\n*TOTAL : ${totalOrder} ORDER*\n${totalOpen} OPEN | ${totalProgress} PROGRESS | ${totalClosed} CLOSED`;
+    const summary = `\n\n*TOTAL : ${totalOrder} ORDER*\n${totalOpen} OPEN • ${totalProgress} PROGRESS • ${totalClosed} CLOSED`;
 
     const detail = orders
-      .map(
-        (o, i) =>
-          `\n\n${i + 1}. ${o.ac_reg}\n${o.order}\n${o.description}\n${
-            o.status
-          }\n${o.remark}`
-      )
-      .join('');
+  .map((o, i) => {
+    const statusIcon =
+      o.status === "OPEN"
+        ? "🔴"
+        : o.status === "PROGRESS"
+        ? "🟡"
+        : o.status === "CLOSED"
+        ? "🟢"
+        : "⚪";
+
+    return `
+
+${i + 1}. ${o.ac_reg} • ${o.order}
+${o.description}
+${statusIcon} ${o.status}${
+      o.remark?.trim() ? `\n> ${o.remark}` : ""
+    }`;
+  })
+  .join("");
 
     const closing = `\n\n*BEST REGARDS*\n${supervisor}\n${crew}`;
 
