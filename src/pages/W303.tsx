@@ -404,6 +404,12 @@ export default function W303() {
     acReg: item.ac_reg || '',
     description: item.description || '',
     remark: item.remark_mw || '',
+    remark: [
+      item.remark_mw,
+      item.handle_by_mw ? `PIC: ${item.handle_by_mw}` : '',
+    ]
+      .filter(Boolean)
+      .join('\n'),
     status: item.status_mw?.toUpperCase() || '',
   }));
 

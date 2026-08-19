@@ -363,6 +363,12 @@ export default function W301() {
     acReg: item.ac_reg || '',
     description: item.description || '',
     remark: item.remark_sm1 || '',
+    remark: [
+      item.remark_sm1,
+      item.handle_by_sm1 ? `PIC: ${item.handle_by_sm1}` : '',
+    ]
+      .filter(Boolean)
+      .join('\n'),
     status: item.status_sm1?.toUpperCase() || '',
   }));
 

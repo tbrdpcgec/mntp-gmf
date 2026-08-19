@@ -363,6 +363,12 @@ export default function W305() {
     acReg: item.ac_reg || '',
     description: item.description || '',
     remark: item.remark_cs4 || '',
+    remark: [
+      item.remark_cs4,
+      item.handle_by_cs4 ? `PIC: ${item.handle_by_cs4}` : '',
+    ]
+      .filter(Boolean)
+      .join('\n'),
     status: item.status_cs4?.toUpperCase() || '',
   }));
 

@@ -364,6 +364,12 @@ export default function W304() {
     acReg: item.ac_reg || '',
     description: item.description || '',
     remark: item.remark_sm4 || '',
+    remark: [
+      item.remark_sm4,
+      item.handle_by_sm4 ? `PIC: ${item.handle_by_sm4}` : '',
+    ]
+      .filter(Boolean)
+      .join('\n'),
     status: item.status_sm4?.toUpperCase() || '',
   }));
 
