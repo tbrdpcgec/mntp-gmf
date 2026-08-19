@@ -35,7 +35,7 @@ const menuItems = [
   { label: 'ABMP', icon: <FaPlaneDeparture />, path: '/abmp' },
   { label: 'SP', icon: <RiMailSendLine />, path: '/spaja' },
   { label: 'Archived', icon: <FaFolder />, path: '/archived' },
-  { label: 'All Apps', icon: <FaGlobe />, path: '/apps' },
+  { label: 'Forms', icon: <FaGlobe />, path: '/apps' },
 ];
 
 const dashboardSubmenu = [
@@ -133,7 +133,7 @@ export default function Sidebar({ isCollapsed }: { isCollapsed: boolean }) {
     'ABMP',
     'SP',
     'Archived',
-    'All Apps',
+    'Forms',
   ];
 
   const [userAllowedMenus, setUserAllowedMenus] = useState<string[]>(

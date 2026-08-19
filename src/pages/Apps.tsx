@@ -1,28 +1,14 @@
-const Material = () => {
+export default function PowerBIDashboard() {
   return (
-    <div className="w-full h-[70vh] flex items-center justify-center">
-      <div className="flex flex-col items-center gap-4 px-10 py-8 rounded-2xl shadow-xl bg-[#1f2937] border border-gray-700">
-        {/* ICON */}
-        <div className="text-6xl animate-pulse">🚧</div>
-
-        {/* TITLE */}
-        <h1 className="text-2xl font-bold text-white tracking-wide">
-          UNDER DEVELOPMENT
-        </h1>
-
-        {/* DESCRIPTION */}
-        <p className="text-[13px] text-gray-300 text-center max-w-[350px] leading-relaxed">
-          Material menu is currently under development and will be available
-          soon.
-        </p>
-
-        {/* STATUS */}
-        <div className="px-4 py-1 rounded-full bg-yellow-500/20 border border-yellow-400 text-yellow-300 text-[11px] font-semibold">
-          IN PROGRESS DEVELOPMENT
-        </div>
-      </div>
+    <div className="w-full h-[90vh]">
+      <iframe
+        title="Power BI Dashboard"
+        src="https://app.powerbi.com/view?r=eyJrIjoiODY0N2Y0MWQtMTQ0Ny00MjQ5LThiMmMtOGYxYTg4MGJhMmVkIiwidCI6ImIxNTAxOTBhLTE2ZjMtNGZiYS04YmY2LTNhNjIwYWI3NjA3OSIsImMiOjEwfQ%3D%3D"
+        width="100%"
+        height="100%"
+        frameBorder="0"
+        allowFullScreen
+      />
     </div>
   );
-};
-
-export default Material;
+}
