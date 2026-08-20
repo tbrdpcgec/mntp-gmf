@@ -496,6 +496,41 @@ ${statusIcon} ${o.status}${
     currentPage * rowsPerPage
   );
 
+  const shiftTimeMap = {
+    MORNING: {
+      in: '08.00 AM',
+      out: '03.00 PM',
+    },
+    AFTERNOON: {
+      in: '03.00 PM',
+      out: '10.00 PM',
+    },
+  };
+
+  const handleShiftOutChange = (value) => {
+    setShiftOut(value);
+
+    const shift = value.trim().toUpperCase();
+
+    if (shift.includes('MORNING')) {
+      setTimeOut('03.00 PM');
+    } else if (shift.includes('AFTERNOON')) {
+      setTimeOut('10.00 PM');
+    }
+  };
+
+  const handleShiftInChange = (value) => {
+    setShiftIn(value);
+
+    const shift = value.trim().toUpperCase();
+
+    if (shift.includes('MORNING')) {
+      setTimeIn('08.00 AM');
+    } else if (shift.includes('AFTERNOON')) {
+      setTimeIn('03.00 PM');
+    }
+  };
+
   return (
     <div className="bg-[#141414] h-full w-full">
       <div className="bg-[#292929] px-3 pt-2 pb-6 max-h-[100vh] overflow-y-auto w-full rounded-lg">
@@ -742,14 +777,14 @@ ${statusIcon} ${o.status}${
                     className="bg-transparent border border-gray-500 px-1 py-0.5 rounded-md w-[100px]"
                   />
 
-                  <input
-                    type="text"
-                    list="shiftOptions"
-                    placeholder="Shift Out"
-                    value={shiftOut}
-                    onChange={(e) => setShiftOut(e.target.value)}
-                    className="bg-transparent border border-gray-500 px-1 py-0.5 rounded-md w-[120px]"
-                  />
+                 <input
+                      type="text"
+                      list="shiftOptions"
+                      placeholder="Shift Out"
+                      value={shiftOut}
+                      onChange={(e) => handleShiftOutChange(e.target.value)}
+                      className="bg-[#111] border border-gray-600 px-2 py-1 rounded text-[11px]"
+                    />
                   <input
                     type="text"
                     list="timeOptions"
@@ -1165,14 +1200,14 @@ ${statusIcon} ${o.status}${
                   className="bg-[#111] border border-gray-600 px-2 py-1 rounded text-[11px]"
                 />
 
-                <input
-                  type="text"
-                  list="shiftOptions"
-                  placeholder="Shift Out"
-                  value={shiftOut}
-                  onChange={(e) => setShiftOut(e.target.value)}
-                  className="bg-[#111] border border-gray-600 px-2 py-1 rounded text-[11px]"
-                />
+<input
+                      type="text"
+                      list="shiftOptions"
+                      placeholder="Shift Out"
+                      value={shiftOut}
+                      onChange={(e) => handleShiftOutChange(e.target.value)}
+                      className="bg-[#111] border border-gray-600 px-2 py-1 rounded text-[11px]"
+                    />
 
                 <input
                   type="text"
@@ -1219,14 +1254,15 @@ ${statusIcon} ${o.status}${
                   className="bg-[#111] border border-gray-600 px-2 py-1 rounded text-[11px]"
                 />
 
-                <input
-                  type="text"
-                  list="shiftOptions"
-                  placeholder="Shift In"
-                  value={shiftIn}
-                  onChange={(e) => setShiftIn(e.target.value)}
-                  className="bg-[#111] border border-gray-600 px-2 py-1 rounded text-[11px]"
-                />
+                
+<input
+                      type="text"
+                      list="shiftOptions"
+                      placeholder="Shift In"
+                      value={shiftIn}
+                      onChange={(e) => handleShiftInChange(e.target.value)}
+                      className="bg-[#111] border border-gray-600 px-2 py-1 rounded text-[11px]"
+                    />
 
                 <input
                   type="text"

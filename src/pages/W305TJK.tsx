@@ -385,6 +385,12 @@ export default function W301() {
     acReg: item.ac_reg || '',
     description: item.description || '',
     remark: item.remark_cs4 || '',
+    remark: [
+      item.remark_cs4,
+      item.handle_by_cs4 ? `PIC: ${item.handle_by_cs4}` : '',
+    ]
+      .filter(Boolean)
+      .join('\n'),
     status: item.status_cs4?.toUpperCase() || '',
   }));
 
@@ -504,6 +510,41 @@ ${statusIcon} ${o.status}${
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
+
+  const shiftTimeMap = {
+    MORNING: {
+      in: '08.00 AM',
+      out: '03.00 PM',
+    },
+    AFTERNOON: {
+      in: '03.00 PM',
+      out: '10.00 PM',
+    },
+  };
+
+  const handleShiftOutChange = (value) => {
+    setShiftOut(value);
+
+    const shift = value.trim().toUpperCase();
+
+    if (shift.includes('MORNING')) {
+      setTimeOut('03.00 PM');
+    } else if (shift.includes('AFTERNOON')) {
+      setTimeOut('10.00 PM');
+    }
+  };
+
+  const handleShiftInChange = (value) => {
+    setShiftIn(value);
+
+    const shift = value.trim().toUpperCase();
+
+    if (shift.includes('MORNING')) {
+      setTimeIn('08.00 AM');
+    } else if (shift.includes('AFTERNOON')) {
+      setTimeIn('03.00 PM');
+    }
+  };
 
   return (
     <div className="bg-[#141414] h-full w-full">
@@ -1070,14 +1111,14 @@ ${statusIcon} ${o.status}${
                   className="bg-[#111] border border-gray-600 px-2 py-1 rounded text-[11px]"
                 />
 
-                <input
-                  type="text"
-                  list="shiftOptions"
-                  placeholder="Shift Out"
-                  value={shiftOut}
-                  onChange={(e) => setShiftOut(e.target.value)}
-                  className="bg-[#111] border border-gray-600 px-2 py-1 rounded text-[11px]"
-                />
+                 <input
+                      type="text"
+                      list="shiftOptions"
+                      placeholder="Shift Out"
+                      value={shiftOut}
+                      onChange={(e) => handleShiftOutChange(e.target.value)}
+                      className="bg-[#111] border border-gray-600 px-2 py-1 rounded text-[11px]"
+                    />
 
                 <input
                   type="text"
@@ -1124,14 +1165,14 @@ ${statusIcon} ${o.status}${
                   className="bg-[#111] border border-gray-600 px-2 py-1 rounded text-[11px]"
                 />
 
-                <input
-                  type="text"
-                  list="shiftOptions"
-                  placeholder="Shift In"
-                  value={shiftIn}
-                  onChange={(e) => setShiftIn(e.target.value)}
-                  className="bg-[#111] border border-gray-600 px-2 py-1 rounded text-[11px]"
-                />
+<input
+                      type="text"
+                      list="shiftOptions"
+                      placeholder="Shift In"
+                      value={shiftIn}
+                      onChange={(e) => handleShiftInChange(e.target.value)}
+                      className="bg-[#111] border border-gray-600 px-2 py-1 rounded text-[11px]"
+                    />
 
                 <input
                   type="text"
