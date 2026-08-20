@@ -264,7 +264,7 @@ const HandOverPDF = ({ data = {} }) => {
               <Text
                 style={[
                   styles.tableHeaderCell,
-                  { width: '28.78%' },
+                  { width: '28.78%', borderRightWidth: 0 },
                   styles.noBottomBorder,
                 ]}
               >
@@ -280,7 +280,7 @@ const HandOverPDF = ({ data = {} }) => {
               <Text style={[styles.tableHeaderCell, { width: '5%' }]}>P</Text>
               <Text style={[styles.tableHeaderCell, { width: '5%' }]}>C</Text>
               <Text
-                style={[styles.tableHeaderCell, { width: '28.78%' }]}
+                style={[styles.tableHeaderCell, { width: '28.78%', borderRightWidth: 0 }]}
               ></Text>
             </View>
 
@@ -349,6 +349,7 @@ const HandOverPDF = ({ data = {} }) => {
                           textAlign: 'left',
                           paddingLeft: 6,
                           justifyContent: 'center',
+                          borderRightWidth: 0,
                         },
                       ]}
                     >
@@ -362,7 +363,7 @@ const HandOverPDF = ({ data = {} }) => {
             <View
               style={{
                 flexDirection: 'row',
-                borderWidth: 0.5,
+                borderWidth: 0.1,
                 borderColor: '#000',
               }}
             >
@@ -385,7 +386,7 @@ const HandOverPDF = ({ data = {} }) => {
             <View
               style={{
                 flexDirection: 'row',
-                borderWidth: 1,
+                borderTopWidth: 1,
                 borderColor: '#000',
               }}
             >

@@ -258,7 +258,18 @@ export default function W303() {
   const filteredOptions = uniqueAcRegs.filter((reg) =>
     reg.toLowerCase().includes(filterAcReg.toLowerCase())
   );
+  
+  const defaultManager = managerOptions?.[0] || '';
   //////
+  useEffect(() => {
+    if (showDailyReport && managerOptions?.length > 0) {
+      const manager = managerOptions[0];
+  
+      setManagerOut(manager);
+      setManagerIn(manager);
+    }
+  }, [showDailyReport, managerOptions]);
+  ////////
 
   const filteredRows = rows.filter((row) => {
     const status = row.status_mw || '';
