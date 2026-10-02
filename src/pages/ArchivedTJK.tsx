@@ -428,6 +428,15 @@ export default function BUSH4() {
     );
   };
 
+  const acRegOptions = [
+    ...new Set(rows.map((r) => r.ac_reg).filter(Boolean)),
+  ];
+  
+  const filteredOptions = acRegOptions.filter((reg) =>
+    String(reg)
+      .toLowerCase()
+      .includes(filterAcReg.toLowerCase())
+  );
   return (
     <div className="bg-gray-100 w-full h-full">
       <div className="bg-white px-3 pt-3 pb-6 max-h-[100vh] overflow-hidden w-full rounded-lg">

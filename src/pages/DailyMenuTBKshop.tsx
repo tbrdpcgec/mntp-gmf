@@ -525,7 +525,7 @@ export default function BUSH4() {
               );
         
               const { error: archivedError } = await supabase
-                .from('mntp_tcr')
+                .from('mdr_tracking_tbk')
                 .update({ archived: true })
                 .in('id', batchIds);
         

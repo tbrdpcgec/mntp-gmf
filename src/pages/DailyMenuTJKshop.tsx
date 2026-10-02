@@ -538,8 +538,8 @@ export default function BUSH4() {
                 `📦 Archiving ${i + 1} - ${i + batchIds.length} of ${selectedRows.length}`
               );
         
-              const { error: archivedError } = await supabase
-                .from('mntp_tcr')
+              const { error: archivedError } = await supabaseSecond
+                .from('mdr_tracking')
                 .update({ archived: true })
                 .in('id', batchIds);
         
