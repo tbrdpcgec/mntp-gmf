@@ -200,6 +200,7 @@ export default function BUSH4() {
   const [rows, setRows] = useState<Row[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterAcReg, setFilterAcReg] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [filterOrder, setFilterOrder] = useState('');
   const [filterDocStatus, setFilterDocStatus] = useState('');
   const [sortKey, setSortKey] = useState('');
@@ -453,6 +454,20 @@ export default function BUSH4() {
     );
   };
 
+
+
+  const acRegOptions = [
+    ...new Set(rows.map((r) => r.ac_reg).filter(Boolean)),
+  ];
+  
+  const filteredOptions = acRegOptions.filter((reg) =>
+    String(reg)
+      .toLowerCase()
+      .includes(filterAcReg.toLowerCase())
+  );
+
+
+
   return (
     <div className="bg-gray-100 w-full h-full">
       <div className="bg-white px-3 pt-3 pb-6 max-h-[100vh] overflow-hidden w-full rounded-lg">
@@ -526,20 +541,58 @@ export default function BUSH4() {
             </div>
           </div>
 
-          <select
-            value={filterAcReg}
-            onChange={(e) => setFilterAcReg(e.target.value)}
-            className="border rounded px-1 py-1 text-xs"
-          >
-            <option value="">All A/C Reg</option>
-            {[...new Set(rows.map((r) => r.ac_reg).filter(Boolean))].map(
-              (reg) => (
-                <option key={reg} value={reg}>
-                  {reg}
-                </option>
-              )
-            )}
-          </select>
+         <div className="relative w-[120px]">
+  <input
+    type="text"
+    value={filterAcReg}
+    onChange={(e) => {
+      setFilterAcReg(e.target.value);
+      setShowSuggestions(true);
+    }}
+    onFocus={() => setShowSuggestions(true)}
+    onBlur={() =>
+      setTimeout(() => setShowSuggestions(false), 150)
+    }
+    placeholder="Filter A/C Reg"
+    className="border border-gray-500 bg-white text-black rounded-md px-1 py-1 text-[11px] w-full shadow hover:bg-gray-500"
+  />
+
+  {showSuggestions && (
+    <ul className="absolute z-50 bg-[#292929] text-white border border-gray-500 w-full max-h-60 overflow-y-auto text-[11px] shadow-md rounded">
+      {/* ALL */}
+      <li
+        className="px-2 py-1 hover:bg-blue-600 cursor-pointer"
+        onMouseDown={() => {
+          setFilterAcReg('');
+          setShowSuggestions(false);
+        }}
+      >
+        All A/C Reg
+      </li>
+
+      {/* NO MATCH */}
+      {filteredOptions.length === 0 && filterAcReg && (
+        <li className="px-2 py-1 text-gray-400">
+          No match
+        </li>
+      )}
+
+      {/* OPTIONS */}
+      {filteredOptions.map((reg) => (
+        <li
+          key={reg}
+          className="px-2 py-1 hover:bg-blue-600 cursor-pointer"
+          onMouseDown={() => {
+            setFilterAcReg(reg);
+            setShowSuggestions(false);
+          }}
+        >
+          {reg}
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
 
           <select
             value={filterDocStatus}

@@ -513,23 +513,47 @@ export default function BUSH4() {
         }
         break;
 
-      case 'archived':
-        const { error: archivedError } = await supabaseSecond
-          .from('mdr_tracking_tbk')
-          .update({ archived: true })
-          .in('id', selectedRows);
-
-        if (archivedError) {
-          console.error('❌ Failed to archived:', archivedError);
-          setNotification('❌ Failed to archived data.');
-        } else {
-          // Remove from view after archive
-          setRows((prev) =>
-            prev.filter((row) => !selectedRows.includes(row.id))
-          );
-          setNotification('✅ Rows successfully archived!');
+        case 'archived': {
+          const BATCH_SIZE = 50;
+        
+          try {
+            for (let i = 0; i < selectedRows.length; i += BATCH_SIZE) {
+              const batchIds = selectedRows.slice(i, i + BATCH_SIZE);
+        
+              console.log(
+                `📦 Archiving ${i + 1} - ${i + batchIds.length} of ${selectedRows.length}`
+              );
+        
+              const { error: archivedError } = await supabase
+                .from('mntp_tcr')
+                .update({ archived: true })
+                .in('id', batchIds);
+        
+              if (archivedError) {
+                throw archivedError;
+              }
+            }
+        
+            // Remove ALL archived rows from current state
+            setRows((prev) =>
+              prev.filter((row) => !selectedRows.includes(row.id))
+            );
+        
+            setNotification(
+              `✅ ${selectedRows.length} rows successfully archived!`
+            );
+          } catch (error: any) {
+            console.error('❌ Failed to archive:', error);
+        
+            setNotification(
+              `❌ Failed to archive data: ${
+                error?.message || 'Unknown error'
+              }`
+            );
+          }
+        
+          break;
         }
-        break;
     }
 
     setShowMenu(false);

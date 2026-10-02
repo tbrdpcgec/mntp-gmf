@@ -22,6 +22,17 @@ const DOC_STATUS_OPTIONS = [
 
 const TEXT_INPUT_COLUMNS = ['remark', 'sp'];
 
+const RO_OPTIONS = [
+  'SURYA',
+  'LUKMAN ',
+  'FAQIH',
+  'JAKA ',
+  'JODI',
+  'BINTANG ',
+  'PUTRA',
+  'AGUNG',
+];
+
 const REMARK_OPTIONS = [
   'WAITING REMOVE',
   'WAITING MATERIAL',
@@ -62,6 +73,7 @@ const columnWidths: Record<string, string> = {
   sn: 'min-w-[sn0px]',
   type_ac: 'min-w-[80px]',
   category: 'min-w-[100px]',
+  ro_by: 'min-w-[60px]',
   priority: 'min-w-[00px]',
   status_pe: 'min-w-[0px]',
   cek_sm4: 'min-w-[50px]',
@@ -93,6 +105,8 @@ const COLUMN_ORDER: { key: string; label: string }[] = [
   { key: 'location', label: 'Location' },
   { key: 'date_in', label: 'Date In' },
   { key: 'doc_status', label: 'Doc Status' },
+  { key: 'ro_by', label: 'RO By' },
+
   { key: 'priority', label: 'Priority' },
   { key: 'remark', label: 'Remark' },
   { key: 'cek_sm4', label: 'Sheetmetal' },
@@ -283,7 +297,7 @@ export default function BUSH4() {
   const [filterDocStatus, setFilterDocStatus] = useState('');
   const [filterStatusJob, setFilterStatusJob] = useState('');
   const [filterPriority, setFilterPriority] = useState('All');
-
+  const [tempRoBy, setTempRoBy] = useState<Record<string, string>>({});
   const [filterDocType, setFilterDocType] = useState('');
   const [filterLocation, setFilterLocation] = useState('');
   const [editingDateId, setEditingDateId] = useState<string | null>(null);
@@ -513,23 +527,47 @@ export default function BUSH4() {
         }
         break;
 
-      case 'archived':
-        const { error: archivedError } = await supabaseSecond
-          .from('mdr_tracking')
-          .update({ archived: true })
-          .in('id', selectedRows);
-
-        if (archivedError) {
-          console.error('❌ Failed to archived:', archivedError);
-          setNotification('❌ Failed to archived data.');
-        } else {
-          // Remove from view after archive
-          setRows((prev) =>
-            prev.filter((row) => !selectedRows.includes(row.id))
-          );
-          setNotification('✅ Rows successfully archived!');
+        case 'archived': {
+          const BATCH_SIZE = 50;
+        
+          try {
+            for (let i = 0; i < selectedRows.length; i += BATCH_SIZE) {
+              const batchIds = selectedRows.slice(i, i + BATCH_SIZE);
+        
+              console.log(
+                `📦 Archiving ${i + 1} - ${i + batchIds.length} of ${selectedRows.length}`
+              );
+        
+              const { error: archivedError } = await supabase
+                .from('mntp_tcr')
+                .update({ archived: true })
+                .in('id', batchIds);
+        
+              if (archivedError) {
+                throw archivedError;
+              }
+            }
+        
+            // Remove ALL archived rows from current state
+            setRows((prev) =>
+              prev.filter((row) => !selectedRows.includes(row.id))
+            );
+        
+            setNotification(
+              `✅ ${selectedRows.length} rows successfully archived!`
+            );
+          } catch (error: any) {
+            console.error('❌ Failed to archive:', error);
+        
+            setNotification(
+              `❌ Failed to archive data: ${
+                error?.message || 'Unknown error'
+              }`
+            );
+          }
+        
+          break;
         }
-        break;
     }
 
     setShowMenu(false);
@@ -1609,6 +1647,38 @@ export default function BUSH4() {
                           }
                         `}
                           />
+                          ) : key === 'ro_by' ? (
+                            <div className="relative w-[70px]">
+                              <input
+                                type="text"
+                                value={tempRoBy[row.id] ?? row[key] ?? ''}
+                                onChange={(e) =>
+                                  setTempRoBy((prev) => ({
+                                    ...prev,
+                                    [row.id]: e.target.value,
+                                  }))
+                                }
+                                onBlur={() => {
+                                  const newValue = tempRoBy[row.id];
+                          
+                                  if (
+                                    newValue !== undefined &&
+                                    newValue !== row[key]
+                                  ) {
+                                    handleUpdate(row.id, key, newValue);
+                                  }
+                                }}
+                                placeholder=" "
+                                className="px-1 py-0.5 rounded-md bg-transparent text-[11px] w-full"
+                                list={`ro_by_list_${row.id}`}
+                              />
+                          
+                              <datalist id={`ro_by_list_${row.id}`}>
+                                {RO_OPTIONS.map((option) => (
+                                  <option key={option} value={option} />
+                                ))}
+                              </datalist>
+                            </div>
                         ) : key === 'remark' ? (
                           <div className="relative w-[200px]">
                             <input
@@ -1640,6 +1710,7 @@ export default function BUSH4() {
                               ))}
                             </datalist>
                           </div>
+
                         ) : key === 'tracking_sp' ||
                           key === 'link_scan' ||
                           key === 'type_ac' ||
