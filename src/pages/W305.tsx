@@ -373,7 +373,6 @@ export default function W305() {
     reference: item.order,
     acReg: item.ac_reg || '',
     description: item.description || '',
-    remark: item.remark_cs4 || '',
     remark: [
       item.remark_cs4,
       item.handle_by_cs4 ? `PIC: ${item.handle_by_cs4}` : '',

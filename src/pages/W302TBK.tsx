@@ -398,7 +398,6 @@ export default function W301() {
     reference: item.order,
     acReg: item.ac_reg || '',
     description: item.description || '',
-    remark: item.remark_cs1 || '',
     remark: [
       item.remark_cs1,
       item.handle_by_cs1 ? `PIC: ${item.handle_by_cs1}` : '',

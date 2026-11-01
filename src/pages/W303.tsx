@@ -414,7 +414,6 @@ export default function W303() {
     reference: item.order,
     acReg: item.ac_reg || '',
     description: item.description || '',
-    remark: item.remark_mw || '',
     remark: [
       item.remark_mw,
       item.handle_by_mw ? `PIC: ${item.handle_by_mw}` : '',

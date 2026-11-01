@@ -372,28 +372,44 @@ export default function BUSH4() {
     setShowConfirmModal(true);
   };
 
-  const handleAction = async (action: 'copy' | 'save') => {
-    if (selectedRows.length === 0) {
-      setNotification('❗ No rows selected.');
-      setShowMenu(false);
-      return;
-    }
 
+  const formatHeader = (key: string) =>
+  key
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+
+
+
+  const handleAction = async (
+    action: 'copy' | 'save' | 'dailyReport'
+  ) => {
     switch (action) {
-      case 'copy':
+      case 'copy': {
+        if (selectedRows.length === 0) {
+          setNotification('❗ No rows selected.');
+          break;
+        }
+  
         const selectedData = rows
           .filter((row) => selectedRows.includes(row.id))
           .map((row) => [row.ac_reg, row.order])
           .map((fields) => fields.join('\t'))
           .join('\n');
-
+  
         navigator.clipboard
           .writeText(selectedData)
           .then(() => setNotification('✅ Data copied to clipboard!'))
           .catch(() => setNotification('❌ Failed to copy to clipboard.'));
+  
         break;
-
-      case 'save':
+      }
+  
+      case 'save': {
+        if (selectedRows.length === 0) {
+          setNotification('❗ No rows selected.');
+          break;
+        }
+  
         const selectedForExport = rows
           .filter((row) => selectedRows.includes(row.id))
           .map((row, index) => ({
@@ -407,28 +423,189 @@ export default function BUSH4() {
             SP: row.sp,
             'Loc Doc/Part': row.loc_doc,
           }));
-
+  
         if (selectedForExport.length === 0) {
           setNotification('❗ No data to export.');
           break;
         }
-
+  
         const worksheet = XLSX.utils.json_to_sheet(selectedForExport);
         const workbook = XLSX.utils.book_new();
+  
         const today = new Date();
         const formattedDate = today.toLocaleDateString('en-GB', {
           day: '2-digit',
           month: 'short',
           year: 'numeric',
         });
-
-        const sheetName = `Dashboard MNTP ${formattedDate}`;
-        XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
-        XLSX.writeFile(workbook, `Dashboard_MNTP_${formattedDate}.xlsx`);
+  
+        XLSX.utils.book_append_sheet(
+          workbook,
+          worksheet,
+          `Dashboard MNTP ${formattedDate}`
+        );
+  
+        XLSX.writeFile(
+          workbook,
+          `Dashboard_MNTP_${formattedDate}.xlsx`
+        );
+  
         setNotification('✅ Data exported as Excel file!');
+  
         break;
-    }
+      }
+  
+      case 'dailyReport': {
+        const reportColumns = [
+          'report_mw',
+          'report_cs1',
+          'report_cs4',
+          'report_sm1',
+          'report_sm4',
+        ];
+      // Filter row yang minimal satu report bernilai checked
+const columnHeaders: Record<string, string> = {
+  ac_reg: 'A/C Reg',
+  order: 'Order',
+  description: 'Description',
+  doc_type: 'Doc Type',
+  shop: 'Shop',
+  date_in: 'Date In',
+  status_job: 'Status Job',
+  remark_pro: 'Production Note',
+};
 
+const dailyReportData = rows
+  .filter((row) =>
+    reportColumns.some((key) => isChecked(row[key]))
+  )
+  .map((row) =>
+    Object.fromEntries(
+      Object.entries(columnHeaders).map(([key, header]) => [
+        header,
+        key === 'date_in' && row[key]
+          ? formatDateToDDMMMYYYY(new Date(row[key]))
+          : row[key] ?? '',
+      ])
+    )
+  );
+      
+        if (dailyReportData.length === 0) {
+          setNotification('❗ No Daily Report data found.');
+          break;
+        }
+      
+        const worksheet = XLSX.utils.json_to_sheet(dailyReportData);
+
+        worksheet['!cols'] = [
+          { wch: 12 }, // A/C Reg
+          { wch: 10 }, // Order
+          { wch: 35 }, // Description
+          { wch: 12 }, // Doc Type
+          { wch: 15 }, // Shop
+          { wch: 15 }, // Date In
+          { wch: 15 }, // Status Job
+          { wch: 55 }, // Production Note
+        ];
+
+        const workbook = XLSX.utils.book_new();
+      
+        const today = new Date();
+        const formattedDate = today.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+        });
+      
+        XLSX.utils.book_append_sheet(
+          workbook,
+          worksheet,
+          'Daily Report'
+        );
+      
+
+        // ===== SHEET 2: DAILY REPORT SUMMARY =====
+
+const pivotSource = rows
+.filter((row) =>
+  reportColumns.some((key) => isChecked(row[key]))
+)
+.sort((a, b) => {
+  const acRegCompare = String(a.ac_reg ?? '').localeCompare(
+    String(b.ac_reg ?? ''),
+    undefined,
+    { numeric: true }
+  );
+
+  if (acRegCompare !== 0) return acRegCompare;
+
+  return String(a.order ?? '').localeCompare(
+    String(b.order ?? ''),
+    undefined,
+    { numeric: true }
+  );
+});
+
+// Buat tampilan pengelompokan A/C Reg
+let previousAcReg = '';
+
+const pivotData = pivotSource.map((row) => {
+const currentAcReg = row.ac_reg ?? '';
+
+const displayAcReg =
+  currentAcReg === previousAcReg ? '' : currentAcReg;
+
+previousAcReg = currentAcReg;
+
+return {
+  'A/C Reg': displayAcReg,
+  Order: row.order ?? '',
+  Description: row.description ?? '',
+  Remarks: row.remark_pro ?? '',
+  Shop: row.shop ?? '',
+  'Status Job': row.status_job ?? '',
+};
+});
+
+// Buat worksheet Sheet2
+const worksheet2 = XLSX.utils.json_to_sheet(pivotData);
+
+// Atur lebar kolom
+worksheet2['!cols'] = [
+{ wch: 15 }, // A/C Reg
+{ wch: 15 }, // Order
+{ wch: 65 }, // Description
+{ wch: 50 }, // Remarks
+{ wch: 18 }, // Shop
+{ wch: 18 }, // Status Job
+];
+
+// Tambahkan filter
+worksheet2['!autofilter'] = {
+ref: worksheet2['!ref']!,
+};
+
+// Tambahkan Sheet2 ke workbook
+XLSX.utils.book_append_sheet(
+workbook,
+worksheet2,
+'Daily Report Summary'
+);
+
+
+        XLSX.writeFile(
+          workbook,
+          `Daily_Report_MNTP_${formattedDate}.xlsx`
+        );
+      
+        setNotification(
+          `✅ ${dailyReportData.length} Daily Report data exported successfully!`
+        );
+      
+        break;
+      }
+    }
+  
     setShowMenu(false);
     setSelectedRows([]);
     setTimeout(() => setNotification(null), 2500);
@@ -727,13 +904,14 @@ export default function BUSH4() {
 
   // helper kecil (opsional) untuk memastikan cek_sm1 benar-benar terdeteksi
   const isChecked = (v: any) => {
-    // sesuaikan kalau cek_sm1 bisa jadi '1'/'0' atau 'Y'/'N'
+    const value = String(v ?? '').trim().toLowerCase();
+  
     return (
       v === true ||
       v === 1 ||
-      v === '1' ||
-      String(v).toLowerCase() === 'true' ||
-      !!v
+      value === '1' ||
+      value === 'true' ||
+      value === 'checked'
     );
   };
 
@@ -1996,7 +2174,16 @@ export default function BUSH4() {
                       >
                         💾 Export
                       </button>
+                      <button
+  onClick={() => handleAction('dailyReport')}
+  className="block w-full text-left px-2 py-1 hover:bg-gray-100"
+>
+  📄 Daily Report
+</button>
+
                     </div>
+                    
+
                   </div>
                 )}
               </div>
