@@ -465,20 +465,36 @@ export default function BUSH4() {
         ];
       // Filter row yang minimal satu report bernilai checked
 const columnHeaders: Record<string, string> = {
-  ac_reg: 'A/C Reg',
-  order: 'Order',
-  description: 'Description',
-  doc_type: 'Doc Type',
-  shop: 'Shop',
-  date_in: 'Date In',
-  status_job: 'Status Job',
-  remark_pro: 'Production Note',
+  ac_reg: 'A/C REG',
+  order: 'ORDER',
+  description: 'DESCRIPTION',
+  doc_type: 'DOC TYPE',
+  shop: 'SHOP',
+  date_in: 'DATE IN',
+  status_job: 'STATUS JOB',
+  remark_pro: 'REMARK',
 };
 
 const dailyReportData = rows
   .filter((row) =>
     reportColumns.some((key) => isChecked(row[key]))
   )
+  // Urutkan berdasarkan A/C Reg, lalu Order
+  .sort((a, b) => {
+    const acRegCompare = String(a.ac_reg ?? '').localeCompare(
+      String(b.ac_reg ?? ''),
+      undefined,
+      { numeric: true }
+    );
+
+    if (acRegCompare !== 0) return acRegCompare;
+
+    return String(a.order ?? '').localeCompare(
+      String(b.order ?? ''),
+      undefined,
+      { numeric: true }
+    );
+  })
   .map((row) =>
     Object.fromEntries(
       Object.entries(columnHeaders).map(([key, header]) => [
@@ -524,75 +540,7 @@ const dailyReportData = rows
         );
       
 
-        // ===== SHEET 2: DAILY REPORT SUMMARY =====
-
-const pivotSource = rows
-.filter((row) =>
-  reportColumns.some((key) => isChecked(row[key]))
-)
-.sort((a, b) => {
-  const acRegCompare = String(a.ac_reg ?? '').localeCompare(
-    String(b.ac_reg ?? ''),
-    undefined,
-    { numeric: true }
-  );
-
-  if (acRegCompare !== 0) return acRegCompare;
-
-  return String(a.order ?? '').localeCompare(
-    String(b.order ?? ''),
-    undefined,
-    { numeric: true }
-  );
-});
-
-// Buat tampilan pengelompokan A/C Reg
-let previousAcReg = '';
-
-const pivotData = pivotSource.map((row) => {
-const currentAcReg = row.ac_reg ?? '';
-
-const displayAcReg =
-  currentAcReg === previousAcReg ? '' : currentAcReg;
-
-previousAcReg = currentAcReg;
-
-return {
-  'A/C Reg': displayAcReg,
-  Order: row.order ?? '',
-  Description: row.description ?? '',
-  Remarks: row.remark_pro ?? '',
-  Shop: row.shop ?? '',
-  'Status Job': row.status_job ?? '',
-};
-});
-
-// Buat worksheet Sheet2
-const worksheet2 = XLSX.utils.json_to_sheet(pivotData);
-
-// Atur lebar kolom
-worksheet2['!cols'] = [
-{ wch: 15 }, // A/C Reg
-{ wch: 15 }, // Order
-{ wch: 65 }, // Description
-{ wch: 50 }, // Remarks
-{ wch: 18 }, // Shop
-{ wch: 18 }, // Status Job
-];
-
-// Tambahkan filter
-worksheet2['!autofilter'] = {
-ref: worksheet2['!ref']!,
-};
-
-// Tambahkan Sheet2 ke workbook
-XLSX.utils.book_append_sheet(
-workbook,
-worksheet2,
-'Daily Report Summary'
-);
-
-
+        
         XLSX.writeFile(
           workbook,
           `Daily_Report_MNTP_${formattedDate}.xlsx`
